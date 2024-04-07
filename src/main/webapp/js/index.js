@@ -1,5 +1,5 @@
-const webSocket = new WebSocket('ws://localhost:8989/RoomChat/chat');
-
+const webSocket = new WebSocket('ws://localhost:8989/RoomChat/room');
+let active;
 webSocket.onerror = function (event) {
     onError(event)
 };
@@ -11,6 +11,13 @@ webSocket.onmessage = function (event) {
 };
 
 function onMessage(event) {
+    active=JSON.parse(event.data);
+    console.log(active);
+}
+function changeData(activeUsers){
+    console.log(activeUsers.room);
+    var p=document.getElementById(activeUsers.room.id);
+    p.textContent=activeUsers.active;
 }
 function setup() {
     const overlay = document.getElementById('overlay');
@@ -33,6 +40,10 @@ async function onOpen(event) {
     for (var i = 0; i < rooms.length; i++) {
         addRoom(rooms[i]);
     }
+    console.log(active);
+    for(var i=0;i<active.length;i++){
+        changeData(active[i]);
+    }
 }
 function addRoom(room) {
     console.log(room);
@@ -40,9 +51,9 @@ function addRoom(room) {
     // main div
     var div = document.createElement("div");
     div.className = "room";
-    div.addEventListener('click', function () {
-        open(room);
-    });
+    div.onclick = function () {
+        openRoom(room);
+    }
 
     // name
     var name = document.createElement("p");
@@ -56,6 +67,7 @@ function addRoom(room) {
     // current users
     var current = document.createElement("p");
     current.textContent = 0;
+    current.id=room.id;
     div2.appendChild(current);
     // max users
     var max = document.createElement("p");
@@ -69,8 +81,10 @@ function addRoom(room) {
 function onError(event) {
     alert('An error occurred:' + event.data);
 }
-function open(room) {
-    console.log(room);
+async function openRoom(room) {
+    sessionStorage.setItem('roomData', JSON.stringify(room));
+    sessionStorage.setItem('active',document.getElementById(room.id).textContent);
+    window.location.href = "http://localhost:8989/RoomChat/chatroom.html";
 }
 function add() {
     const modal = document.getElementById("modal");
@@ -79,13 +93,13 @@ function add() {
     overlay.classList.add('active');
 }
 async function close() {
-    var name=document.getElementById("chatName").value;
-    var max=document.getElementById("amount").value;
-    var url="http://localhost:8989/RoomChat/room?name="+name+"&limit="+max;
-    var response= await fetch(url,{method:"POST"});
-    if(response.ok){
+    var name = document.getElementById("chatName").value;
+    var max = document.getElementById("amount").value;
+    var url = "http://localhost:8989/RoomChat/room?name=" + name + "&limit=" + max;
+    var response = await fetch(url, { method: "POST" });
+    if (response.ok) {
         location.reload();
-    }else{
+    } else {
         alert("name and mebmer limit is nesseccary");
     }
 }

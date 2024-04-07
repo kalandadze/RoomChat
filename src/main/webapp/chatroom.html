@@ -1,13 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <script src="js/chatroom.js"></script>
     <link rel="stylesheet" type="text/css" href="css/chatroom.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	<title>ChatRoom</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>ChatRoom</title>
 </head>
+
 <body>
 
+    <div class="container" id="header">
+        <h2 id="name">abc</h2>
+    </div>
+
+    <div class="container" id="info">
+        <div>
+            <b>
+                <p id="user">aa</p>
+            </b>
+            <div id="members">
+                <p>members online:  </p>
+                <p id="current">1</p>
+                <p id="max">/ 2</p>
+            </div>
+        </div>
+        <div>
+            <p style="color: rgb(66, 165, 241)" onclick="popUp()">Change name</p>
+            <p style="color: rgb(66, 165, 241); float: right;" onclick="exit()">leave Room</p>
+        </div>
+    </div>
+
+    <div class="container" id="chatroom">
+        <div id="chat">
+            <div class="message">
+                <p class="date">[17:05]</p>
+                <p class="sender">kasdgyfksadjf</p>
+                <p>:  laskdibgiasudgbhiusajgja</p>
+            </div>
+            <div class="message">
+                <p class="date">[17:05]</p>
+                <p class="mine">kasdgyfksadjf</p>
+                <p>:  laskdibgiasudgbhiusajgja</p>
+            </div>
+        </div>
+        <div id="input">
+            <form>
+                <input type="text" id="TextInput" required="required">
+                <input type="button" value="Send" id="btnInp">
+            </form>
+        </div>
+    </div>
+
+
+
+    <div class="modal1 active" id="modal">
+        <h2>New Room</h2>
+        <form>
+            <div>
+                <label for="userName">My name is:</label><br>
+                <input type="text" class="inp" id="userName" name="userName">
+            </div>
+            <input type="button" onclick="enter()" id="btn" value="Submit">
+        </form>
+    </div>
+    <div id="overlay" class="active"> </div>
 </body>
+
 </html>
