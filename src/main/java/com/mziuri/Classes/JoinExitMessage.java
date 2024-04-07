@@ -8,9 +8,9 @@ import java.util.Date;
 public class JoinExitMessage {
     private String username;
     private boolean hasJoined;
-    private Date date;
+    private String date;
 
-    public JoinExitMessage(String username, boolean hasJoined, Date date) {
+    public JoinExitMessage(String username, boolean hasJoined, String date) {
         this.username = username;
         this.hasJoined = hasJoined;
         this.date = date;

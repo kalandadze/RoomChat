@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mziuri.Classes.ActiveUsers;
 import com.mziuri.Classes.Room;
 import com.mziuri.Response.GetRoomsResponse;
+import jakarta.websocket.OnClose;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
@@ -27,6 +28,18 @@ public class RoomEndpoint {
     @OnOpen
     public void open(Session session) throws IOException {
         sessions.add(session);
+        sendData(session);
+    }
+    @OnClose
+    public void close(Session session){
+        sessions.remove(session);
+    }
+    public void resendData() throws IOException {
+        for (Session session:sessions){
+            sendData(session);
+        }
+    }
+    private void sendData(Session session) throws IOException {
         session.getBasicRemote().sendText(mapper.writeValueAsString(getActiveUsers()));
     }
     private List<ActiveUsers> getActiveUsers(){

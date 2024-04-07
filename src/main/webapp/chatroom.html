@@ -13,23 +13,23 @@
 <body>
 
     <div class="container" id="header">
-        <h2 id="name">abc</h2>
+        <h2 id="name"></h2>
     </div>
 
     <div class="container" id="info">
         <div>
             <b>
-                <p id="user">aa</p>
+                <p id="user"></p>
             </b>
             <div id="members">
                 <p>members online:  </p>
-                <p id="current">1</p>
-                <p id="max">/ 2</p>
+                <p id="current"></p>
+                <p id="max"></p>
             </div>
         </div>
         <div>
-            <p style="color: rgb(66, 165, 241)" onclick="popUp()">Change name</p>
-            <p style="color: rgb(66, 165, 241); float: right;" onclick="exit()">leave Room</p>
+            <p style="color: rgb(66, 165, 241); cursor: pointer;" onclick="popUp()">Change name</p>
+            <p style="color: rgb(66, 165, 241); float: right; cursor: pointer;" onclick="exit()">leave Room</p>
         </div>
     </div>
 
@@ -49,7 +49,7 @@
         <div id="input">
             <form>
                 <input type="text" id="TextInput" required="required">
-                <input type="button" value="Send" id="btnInp">
+                <input type="button" value="Send" onclick="sendMessage()" id="btnInp">
             </form>
         </div>
     </div>

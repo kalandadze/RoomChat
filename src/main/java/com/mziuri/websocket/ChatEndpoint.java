@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ServerEndpoint("/chat")
 public class ChatEndpoint {
@@ -27,9 +28,9 @@ public class ChatEndpoint {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    private void sendMessage(Message message, Room room) {
+    private void sendMessage(Message message, Room room, Session session) {
         sessions.forEach((key, value) -> {
-            if (value == room) {
+            if (value.getId() == room.getId() && !Objects.equals(session.getId(), key.getId())) {
                 try {
                     key.getBasicRemote().sendText(mapper.writeValueAsString(message));
                 } catch (IOException e) {
@@ -38,9 +39,10 @@ public class ChatEndpoint {
             }
         });
     }
+
     private void sendMessage(JoinExitMessage message, Room room) {
         sessions.forEach((key, value) -> {
-            if (value == room) {
+            if (value.getId() == room.getId()) {
                 try {
                     key.getBasicRemote().sendText(mapper.writeValueAsString(message));
                 } catch (IOException e) {
@@ -49,22 +51,24 @@ public class ChatEndpoint {
             }
         });
     }
-    private void addUser(Room room, Session session) throws JsonProcessingException {
+
+    private void addUser(Room room, Session session) throws IOException {
         sessions.put(session, room);
+        RoomEndpoint endpoint=new RoomEndpoint();
+        endpoint.resendData();
     }
 
 
     @OnClose
-    public void close(Session session) throws JsonProcessingException {
+    public void close(Session session) throws IOException {
         sessions.remove(session);
-    }
-
-    @OnOpen
-    public void onOpen(Session session) {
+        RoomEndpoint endpoint=new RoomEndpoint();
+        endpoint.resendData();
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) throws JSONException, JsonProcessingException {
+    public void onMessage(String message, Session session) throws JSONException, IOException {
+        System.out.println(message);
         JSONObject object = new JSONObject(message);
         if (object.has("chatName")) {
             System.out.println("a");
@@ -72,12 +76,12 @@ public class ChatEndpoint {
             addUser(room, session);
         } else if (object.has("sender")) {
             System.out.println("b");
-            Message message1 = new Message(object.getString("sender"), object.getString("message"), (Date) object.get("date"));
-            sendMessage(message1, sessions.get(session));
+            Message message1 = new Message(object.getString("sender"), object.getString("message"), object.getString("date"));
+            sendMessage(message1, sessions.get(session),session);
         } else if (object.has("hasJoined")) {
             System.out.println("d");
-            JoinExitMessage message1=new JoinExitMessage(object.getString("username"), object.getBoolean("hasJoined"), (Date) object.get("date"));
-            sendMessage(message1,sessions.get(session));
+            JoinExitMessage message1 = new JoinExitMessage(object.getString("username"), object.getBoolean("hasJoined"), object.getString("date"));
+            sendMessage(message1, sessions.get(session));
         }
     }
 }

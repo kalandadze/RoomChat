@@ -13,6 +13,9 @@ webSocket.onmessage = function (event) {
 function onMessage(event) {
     active=JSON.parse(event.data);
     console.log(active);
+    for(var i=0;i<active.length;i++){
+        changeData(active[i]);
+    }
 }
 function changeData(activeUsers){
     console.log(activeUsers.room);
@@ -36,17 +39,14 @@ async function onOpen(event) {
     var url = "http://localhost:8989/RoomChat/room";
     var response = await fetch(url, { method: "GET" });
     const rooms = await response.json();
-    console.log(rooms);
     for (var i = 0; i < rooms.length; i++) {
         addRoom(rooms[i]);
     }
-    console.log(active);
     for(var i=0;i<active.length;i++){
         changeData(active[i]);
     }
 }
 function addRoom(room) {
-    console.log(room);
 
     // main div
     var div = document.createElement("div");
