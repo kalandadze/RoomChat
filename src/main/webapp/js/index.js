@@ -82,9 +82,14 @@ function onError(event) {
     alert('An error occurred:' + event.data);
 }
 async function openRoom(room) {
-    sessionStorage.setItem('roomData', JSON.stringify(room));
-    sessionStorage.setItem('active',document.getElementById(room.id).textContent);
-    window.location.href = "http://localhost:8989/RoomChat/chatroom.html";
+    var active=document.getElementById(room.id).textContent;
+    if(parseInt(active)==room.maxMembers){
+        alert("the Room is already full");
+    }else{
+        sessionStorage.setItem('roomData', JSON.stringify(room));
+        sessionStorage.setItem('active',active);
+        window.location.href = "http://localhost:8989/RoomChat/chatroom.html";
+    }
 }
 function add() {
     const modal = document.getElementById("modal");

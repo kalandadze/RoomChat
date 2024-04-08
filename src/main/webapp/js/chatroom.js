@@ -22,6 +22,7 @@ function onClose(event) {
         hasJoined: false,
         date: formatDate
     }
+    console.log(message);
     webSocket.send(JSON.stringify(message));
 }
 function onMessage(event) {
