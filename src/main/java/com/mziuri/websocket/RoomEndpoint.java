@@ -49,7 +49,6 @@ public class RoomEndpoint {
         for (Room room : response.getResultList()) {
             int i = 0;
             for (Room room1 : sessionRoomMap.values()) {
-                System.out.println("r00m"+room1.toString());
                 if (room.getId() == room1.getId()) {
                     i+=1;
                     System.out.println("a");

@@ -40,9 +40,9 @@ public class ChatEndpoint {
         });
     }
 
-    private void sendMessage(JoinExitMessage message, Room room) {
+    private void sendMessage(JoinExitMessage message, Room room, Session session) {
         sessions.forEach((key, value) -> {
-            if (value.getId() == room.getId()) {
+            if (value.getId() == room.getId() && !Objects.equals(session.getId(), key.getId())) {
                 try {
                     key.getBasicRemote().sendText(mapper.writeValueAsString(message));
                 } catch (IOException e) {
@@ -52,23 +52,63 @@ public class ChatEndpoint {
         });
     }
 
+    private void sendActiveUsers(Room room) {
+        int i = 0;
+        for (Room room1 : sessions.values()) {
+            if (room.getId() == room1.getId()) {
+                i++;
+            }
+        }
+        int finalI = i;
+        sessions.forEach((key, value) -> {
+            if (value.getId() == room.getId()) {
+                try {
+                    key.getBasicRemote().sendText(mapper.writeValueAsString(finalI));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private void sendActiveUsers(Room room, Session session) {
+        int i = 0;
+        for (Room room1 : sessions.values()) {
+            if (room.getId() == room1.getId()) {
+                i++;
+            }
+        }
+        int finalI = i-1;
+        sessions.forEach((key, value) -> {
+            if (value.getId() == room.getId() && !Objects.equals(session.getId(), key.getId())) {
+                try {
+                    key.getBasicRemote().sendText(mapper.writeValueAsString(finalI));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+
     private void addUser(Room room, Session session) throws IOException {
         sessions.put(session, room);
-        RoomEndpoint endpoint=new RoomEndpoint();
+        sendActiveUsers(room);
+        RoomEndpoint endpoint = new RoomEndpoint();
         endpoint.resendData();
     }
 
 
     @OnClose
     public void close(Session session) throws IOException {
+        sendActiveUsers(sessions.get(session),session);
         sessions.remove(session);
-        RoomEndpoint endpoint=new RoomEndpoint();
+        RoomEndpoint endpoint = new RoomEndpoint();
         endpoint.resendData();
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws JSONException, IOException {
-        System.out.println(message);
         JSONObject object = new JSONObject(message);
         if (object.has("chatName")) {
             System.out.println("a");
@@ -77,11 +117,12 @@ public class ChatEndpoint {
         } else if (object.has("sender")) {
             System.out.println("b");
             Message message1 = new Message(object.getString("sender"), object.getString("message"), object.getString("date"));
-            sendMessage(message1, sessions.get(session),session);
+            sendMessage(message1, sessions.get(session), session);
         } else if (object.has("hasJoined")) {
             System.out.println("d");
+            System.out.println(message);
             JoinExitMessage message1 = new JoinExitMessage(object.getString("username"), object.getBoolean("hasJoined"), object.getString("date"));
-            sendMessage(message1, sessions.get(session));
+            sendMessage(message1, sessions.get(session), session);
         }
     }
 }
